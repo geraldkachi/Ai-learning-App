@@ -1,0 +1,15 @@
+$kind: http-request
+name: Generate Quiz
+url: "{{baseUrl}}/api/ai/generate-quiz"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "documentId": "69bf10ad4d59a4ce6555d630",
+        "numQuestionns": 5,
+        "title": "react js Guide Quiz"
+    }
+order: 2534720071853156

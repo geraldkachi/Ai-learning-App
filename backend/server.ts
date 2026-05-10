@@ -5,19 +5,19 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import errorHandler from "./middleware/errorHandler.ts"
-import mongoose from 'mongoose';
 import connectDB from './config/db.ts';
 import authRoutes from "./routes/authRoutes.ts";
-
+import documentRoutes from './routes/documentRoutes.ts';
+import flashcardRoutes from './routes/flashcardsRoutes.ts';
+import aiRoutes from './routes/aiRoutes.ts';
+import quizRoutes from './routes/quizRoutes.ts';
+import progressRoutes from './routes/progressRoutes.ts';
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-
+const PORT = process.env.PORT || 5000; 
 
 // ES6 Modules fix __dirname alternative
 import { fileURLToPath } from 'url';
-import { stat } from 'fs';
-import { error } from 'console';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,15 +46,14 @@ app.use('/uploads',express.static(path.join(__dirname, 'uploads')));
 // Routes
 
 app.use(errorHandler);
-// import authRoutes from './routes/authRoutes.js';
-// import documentRoutes from './routes/documentRoutes.js';
-// import flashcardRoutes from './routes/flashcardRoutes.js';
-// import quizRoutes from './routes/quizRoutes.js';
 
 app.use('/api/auth', authRoutes);
-// app.use('/api/documents', documentRoutes);
-// app.use('/api/flashcards', flashcardRoutes);
-// app.use('/api/quizzes', quizRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/flashcards', flashcardRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/quizzes', quizRoutes);
+app.use('/api/progress', progressRoutes);
+
 
 
 // 404 handler
@@ -87,3 +86,74 @@ process.on('unhandledRejection', (err, promise) => {
 // }
 
 // Database connection
+
+
+// // server.ts
+// import dotenv from 'dotenv';
+// dotenv.config();
+
+// import express from 'express';
+// import cors from 'cors';
+// import path from 'path';
+// import errorHandler from "./middleware/errorHandler.ts";
+// import connectDB from './config/db.ts';
+// import authRoutes from "./routes/authRoutes.ts";
+
+// import { fileURLToPath } from 'url';
+
+// const app = express();
+// const PORT = process.env.PORT || 5000;
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+// // Connect to database FIRST before starting server
+// const startServer = async () => {
+//   try {
+//     // Wait for database connection
+//     await connectDB();
+    
+//     // Middleware
+//     app.use(cors({
+//       origin: '*',
+//       methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//       credentials: true
+//     }));
+//     app.use(express.json());
+//     app.use(express.urlencoded({ extended: true }));
+
+//     // Static files
+//     app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+//     // Routes
+//     app.use('/api/auth', authRoutes);
+//     app.use(errorHandler);
+
+//     // 404 handler
+//     app.use((req, res) => {
+//       res.status(404).json({ 
+//         success: false,
+//         message: 'Route not found',
+//         statusCode: 404
+//       });
+//     });
+
+//     // Start server
+//     app.listen(PORT, () => {
+//       console.log(`🚀 Server is running on ${process.env.NODE_ENV} port ${PORT}`);
+//       console.log(`📝 Test endpoint: http://localhost:${PORT}/api/auth/register`);
+//     });
+
+//   } catch (error) {
+//     console.error('❌ Failed to start server:', error);
+//     process.exit(1);
+//   }
+// };
+
+// // Handle unhandled rejections
+// process.on('unhandledRejection', (err) => {
+//   console.log('❌ Unhandled Rejection:', err);
+//   process.exit(1);
+// });
+
+// // Start the server
+// startServer();

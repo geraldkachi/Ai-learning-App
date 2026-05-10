@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "repository": "",
   "homepage": "",
   "keywords": [
@@ -30,9 +30,9 @@
   "dependencies": {
     "-": "^0.0.1",
     "@google/genai": "^1.38.0",
+    "D": "^1.0.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
-    "D": "^1.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-validator": "^7.3.1",

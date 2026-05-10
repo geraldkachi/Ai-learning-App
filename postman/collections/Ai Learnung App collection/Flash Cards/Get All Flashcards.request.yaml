@@ -1,0 +1,7 @@
+$kind: http-request
+name: Get All Flashcards
+url: "{{baseUrl}}/api/flashcards"
+method: GET
+headers:
+  Authorization: Bearer {{accessToken}}
+order: 2201232638954245

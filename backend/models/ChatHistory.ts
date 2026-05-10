@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { time } from "node:console";
 
 const chatHistorySchema = new mongoose.Schema({
     userId: {
@@ -28,7 +27,7 @@ const chatHistorySchema = new mongoose.Schema({
                 default: Date.now
             },
             relevantChunks: {
-                type: [String],
+                type: [Number],
                 default: []
             }
         }

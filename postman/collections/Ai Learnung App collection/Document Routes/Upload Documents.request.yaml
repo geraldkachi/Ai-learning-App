@@ -1,0 +1,21 @@
+$kind: http-request
+name: Upload Documents
+url: "{{baseUrl}}/api/documents/upload"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: formdata
+  content:
+    - type: text
+      key: title
+      value: Gerald file for test
+      description: ""
+      disabled: false
+    - type: file
+      key: ""
+      src:
+        - postman-cloud:///1f1256bd-b68c-4180-a06a-72a674fb6870
+      description: ""
+      disabled: false
+order: 1773597572082

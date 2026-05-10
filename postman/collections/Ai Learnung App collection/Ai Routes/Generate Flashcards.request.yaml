@@ -1,0 +1,14 @@
+$kind: http-request
+name: Generate Flashcards
+url: "{{baseUrl}}/api/ai/generate-flashcards"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "documentId": "69bf10ad4d59a4ce6555d630",
+        "count": 10
+    }
+order: 1597115218730720

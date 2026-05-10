@@ -1,0 +1,7 @@
+$kind: http-request
+name: Get All quizzes for a document
+url: "{{baseUrl}}/api/quizzes/69bf10ad4d59a4ce6555d630"
+method: GET
+headers:
+  Authorization: "{{accessToken}}{"
+order: 2914347663193755

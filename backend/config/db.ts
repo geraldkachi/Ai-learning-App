@@ -2,9 +2,12 @@ import mongoose from 'mongoose';
 
 const connectDB = async (): Promise<void> => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || '', {
-      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+    const conn = await mongoose.connect(process.env.MONGODB_URI as string, {
+      serverSelectionTimeoutMS: 50000, // 5 seconds timeout
       socketTimeoutMS: 45000, // 45 seconds socket timeout
+      family: 4, // Use IPv4, skip trying IPv6
+      retryWrites: true,
+      retryReads: true,
     });
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     console.log(`✅ Database: ${conn.connection.name}`);

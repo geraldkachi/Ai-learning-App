@@ -1,0 +1,15 @@
+$kind: http-request
+name: update Profile
+url: "{{baseUrl}}/api/auth/profile"
+method: PUT
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "username": "gerald",
+        "email": "fitzgeraldkachi@gmail.com",
+        "password": "123456789"
+    }
+order: 4030301867536874

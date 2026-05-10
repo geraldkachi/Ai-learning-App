@@ -1,0 +1,15 @@
+$kind: http-request
+name: Get Profile
+url: "{{baseUrl}}/api/auth/profile"
+method: GET
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "username": "geraldkachi", 
+        "email": "fitzgeraldkachi@gmail.com",
+        "profileImage": ""
+    }
+order: 2167080563160512

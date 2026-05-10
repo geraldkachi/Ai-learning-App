@@ -1,0 +1,7 @@
+$kind: http-request
+name: Delete quiz
+url: "{{baseUrl}}/api/quizzes/69c000fed4eae5b857dbd6f4"
+method: DELETE
+headers:
+  Authorization: "{{accessToken}}"
+order: 4252936937604696

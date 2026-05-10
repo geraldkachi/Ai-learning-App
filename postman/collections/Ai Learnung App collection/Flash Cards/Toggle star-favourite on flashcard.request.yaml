@@ -1,0 +1,7 @@
+$kind: http-request
+name: Toggle star/favourite on flashcard
+url: "{{baseUrl}}/api/flashcards"
+method: PUT
+headers:
+  Authorization: Bearer {{accessToken}}
+order: 1133690812492830

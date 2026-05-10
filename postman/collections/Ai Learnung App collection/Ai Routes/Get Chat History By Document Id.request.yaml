@@ -1,0 +1,7 @@
+$kind: http-request
+name: Get Chat History By Document Id
+url: "{{baseUrl}}/api/ai/chat-history/:documentId"
+method: GET
+pathVariables:
+  documentId: ""
+order: 4485749533907547

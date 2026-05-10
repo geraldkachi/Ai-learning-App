@@ -1,0 +1,13 @@
+$kind: http-request
+name: Marks Flashcards as reviewed
+url: "{{baseUrl}}/api/flashcards/69bf10ad4d59a4ce6555d630/review"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "cardIndex": 0
+    }
+order: 3511950703415171

@@ -1,0 +1,7 @@
+$kind: http-request
+name: Delete Document
+url: "{{baseUrl}}/api/documents/"
+method: DELETE
+headers:
+  Authorization: bearer {{accessToken}}
+order: 2704679548875297

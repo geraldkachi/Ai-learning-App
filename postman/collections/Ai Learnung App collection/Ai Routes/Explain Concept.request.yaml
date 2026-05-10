@@ -1,0 +1,14 @@
+$kind: http-request
+name: Explain Concept
+url: "{{baseUrl}}/api/ai/explain-concept"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "documentId": "69bf10ad4d59a4ce6555d630",
+        "concept": "What is React Hook"
+    }
+order: 4484443165309700

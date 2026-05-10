@@ -1,0 +1,7 @@
+$kind: http-request
+name: Get user learning statistics
+url: "{{baseUrl}}/api/progress/dashboard"
+method: GET
+headers:
+  Authorization: "{{accessToken}}"
+order: 1778317963796

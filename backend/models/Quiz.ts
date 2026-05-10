@@ -28,12 +28,13 @@ const quizSchema = new mongoose.Schema({
                 required: [true, 'Question text is required']
             },
           
-            option: {
+            options: {
                 type: [String],
                 required: true,
-                validate: [(array: any) => array.length > 0, 'At least one option is required']
+                // validate: [(array: any) => array.length > 0, 'At least one option is required']
+                validate: [(array: any) => array.length === 4, 'Must have exactly 4 options']
             },
-            currentAnswer: {
+            correctAnswer: {
                 type: String,
                 default: null
             },
@@ -48,7 +49,7 @@ const quizSchema = new mongoose.Schema({
             },
         }
     ],
-    userAnswer: [{
+    userAnswers: [{
         questionIndex: {
             type: Number,
             required: true
@@ -81,7 +82,7 @@ const quizSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        // required: true
     },
     createdAt: {
         type: Date,
@@ -93,4 +94,4 @@ const quizSchema = new mongoose.Schema({
 quizSchema.index({ userId: 1, documentId: 1 }, { unique: true });
 
 const Quiz = mongoose.model('Quiz', quizSchema);
-export default Quiz;
+export default Quiz;    

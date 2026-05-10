@@ -67,7 +67,8 @@ const DocumentSchema = new mongoose.Schema({
 });
  
 
-DocumentSchema.index({ userId: 1, documentId: 1 }, { unique: true });
+// DocumentSchema.index({ userId: 1, documentId: 1 }, { unique: true });
+DocumentSchema.index({ userId: 1, uploadDate: -1 }, { unique: true });
 
 
 const Document = mongoose.model('Document', DocumentSchema);

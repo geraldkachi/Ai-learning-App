@@ -1,0 +1,22 @@
+$kind: http-request
+name: Submit quiz answer
+url: "{{baseUrl}}/api/quizzes/69c000fed4eae5b857dbd6f4/submit"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: >-
+    {
+        "answer": [
+            {
+                "questionIndex": 0,
+                "selectedAnswer": "To build user interface. especially for single page application"
+            },
+            {
+                "questionIndex": 1,
+                "selectedAnswer": "Option B"
+            }
+        ]
+    }
+order: 2130713253209486

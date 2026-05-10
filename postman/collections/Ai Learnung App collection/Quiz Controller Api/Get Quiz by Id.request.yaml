@@ -1,0 +1,7 @@
+$kind: http-request
+name: Get Quiz by Id
+url: "{{baseUrl}}/api/quizzes/69c000fed4eae5b857dbd6f4"
+method: GET
+headers:
+  Authorization: Bearer {{accessToken}}
+order: 1883600823633550

@@ -1,0 +1,14 @@
+$kind: http-request
+name: Chat
+url: "{{baseUrl}}/api/ai/chat"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "documentId": "69bf10ad4d59a4ce6555d630",
+        "question": "why is it popular"
+    }
+order: 1774179942370

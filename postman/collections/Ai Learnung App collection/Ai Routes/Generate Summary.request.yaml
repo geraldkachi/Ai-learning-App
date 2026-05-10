@@ -1,0 +1,13 @@
+$kind: http-request
+name: Generate Summary
+url: "{{baseUrl}}/api/ai/generate-summary"
+method: POST
+headers:
+  Authorization: Bearer {{accessToken}}
+body:
+  type: json
+  content: |-
+    {
+        "documentId": "69bf10ad4d59a4ce6555d630"
+    }
+order: 4445518910059441
