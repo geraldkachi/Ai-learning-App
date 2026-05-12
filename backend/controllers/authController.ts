@@ -1,74 +1,17 @@
-import jwt, { type JwtPayload }  from "jsonwebtoken";
+import jwt, { type JwtPayload, type Secret, type SignOptions } from "jsonwebtoken";
 // import bcrypt from "bcryptjs";
 import User from "../models/User.ts";
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
-import protect from "../middleware/auth.ts";
-import { stat } from "node:fs";
 
 const generateToken = (id: string): string => {
-    return jwt.sign({ id }, process.env.JWT_SECRET as string, {
+    const secret: Secret = process.env.JWT_SECRET as Secret;
+    const options: SignOptions = {
         expiresIn: process.env.JWT_EXPIRE || '7d'
-    })
+    };
+
+    return jwt.sign({ id }, secret, options);
 }
-
-// @desc    Register a new user 
-// @route   POST /api/auth/register
-// @access  Public
-// controllers/authController.ts (partial - just the register function)
-// export const register = async (req: Request, res: Response, next: NextFunction) => {
-    
-//     try {
-//         const { username, email, password } = req.body;
-//         // Check if user already exists
-//         let user = await User.findOne({ $or: [{ email }] });
-//         if (user) {
-//             return res.status(400).json({
-//                 success: false,
-//                 error: user.email === email ? 'Email already exists' : 'Username already exists',
-//                 statusCode: 400
-//             });
-//         }
-
-//         // Check if username exists
-//         const usernameExists = await User.findOne({ username });
-//         if (usernameExists) {
-//             return res.status(400).json({
-//                 success: false,
-//                 error: 'Username already exists',
-//                 statusCode: 400
-//             });
-//         }
-
-//         // Create new user
-//         user = new User({ username, email, password });
-//         await user.save();
-
-//         // Generate JWT token
-//         const token = generateToken(user._id.toString());
-
-//         res.status(201).json({
-//             success: true, 
-//             token,
-//             data: {
-//                 user: {
-//                     id: user._id,
-//                     username: user.username,
-//                     email: user.email,
-//                     profileImage: user.profileImage,
-//                     createdAt: user.createdAt,
-//                 }
-//             },
-//             message: 'User registered successfully',
-//             statusCode: 201
-//         });
-//     } catch (error) {
-//         console.error('Registration error:', error);
-//         // Pass to error handler instead of sending response directly
-//         next(error);
-//     }
-// }
-
 
 // controllers/authController.ts
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -140,6 +83,13 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const user = await User.findOne({ email }).select('+password');
        
         if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'Invalid credentials',
+                statusCode: 401
+             });
+        }
+        if (!user) {
             return res.status(400).json({ 
                 success: false, 
                 error: 'Invalid credentials',
@@ -148,7 +98,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         }
 
         // Check password
-        const isMatch = await user.matchPassword(password);
+        const isMatch = await (user as any).matchPassword(password);
         if (!isMatch) {
             return res.status(400).json({ 
                 success: false,
@@ -283,7 +233,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
         }
 
         // Check current password
-        const isMatch = await user.matchPassword(currentPassword);
+        const isMatch = await (user as any).matchPassword(currentPassword);
         if (!isMatch) {
             return res.status(400).json({ 
                 success: false, 

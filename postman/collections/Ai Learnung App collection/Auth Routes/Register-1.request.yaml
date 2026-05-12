@@ -1,5 +1,0 @@
-$kind: http-request
-name: Register
-url: http://
-method: POST
-order: 1000

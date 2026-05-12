@@ -13,19 +13,21 @@ import FlashcardList from './pages/Flashcards/FlashcardList';
 import QuizTake from './pages/Quizzies/QuizTake';
 import QuizResults from './pages/Quizzies/QuizResults';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-const isAuthenticated = true; // Replace with actual authentication logic
-const isLoading = false; // Replace with actual loading state
+import { useAuth } from './context/AuthContext';
 
-if(isLoading) {
-  <div className='flex items-center justify-center'>
-    <div>Loading...</div>
-  </div>
 
-} 
 
 
 function App() {
-
+  
+  const { isAuthenticated, isLoading, } = useAuth();
+  
+  if(isLoading) {
+    <div className='flex items-center justify-center'>
+      <div>Loading...</div>
+    </div>
+  
+  } 
   return (
     <Router>
       <Routes>

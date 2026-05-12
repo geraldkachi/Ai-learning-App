@@ -29,8 +29,10 @@ export interface ChangePasswordData {
 
 export interface AuthResponse {
   success: boolean;
-  data?: any;
+  token?: string;
+  user?: UserProfile;
   message?: string;
+  statusCode?: number;
 }
 
 export interface UserProfile {

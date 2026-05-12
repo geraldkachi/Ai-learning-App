@@ -14,7 +14,7 @@ import quizRoutes from './routes/quizRoutes.ts';
 import progressRoutes from './routes/progressRoutes.ts';
 const app = express();
 const PORT = process.env.PORT || 5000; 
-
+console.log(PORT, 'PORT po')
 // ES6 Modules fix __dirname alternative
 import { fileURLToPath } from 'url';
 
@@ -33,7 +33,8 @@ try {
 
 // Middleware
 app.use(cors({
-    origin: '*',
+    // origin: '*',
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
@@ -44,9 +45,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads',express.static(path.join(__dirname, 'uploads')));
 
 // Routes
-
-app.use(errorHandler);
-
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/flashcards', flashcardRoutes);
@@ -64,6 +62,10 @@ app.use((req, res, next) => {
     statusCode: 404
  });
 });
+
+
+
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {

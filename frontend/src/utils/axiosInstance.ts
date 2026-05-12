@@ -2,11 +2,12 @@ import axios from "axios"
 import { BASE_URL } from "./apiPaths"
 
 
-const axiosInstance = axios.create({
+const  axiosInstance = axios.create({
     baseURL: BASE_URL,
     timeout: 80000, // 80 seconds timeout
     headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
     },
     withCredentials: true, // Include cookies in requests
 });
@@ -29,9 +30,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response && error.response.status === 500) {
+        if (error.response) {
             // Handle 500 errors
-            console.error('Server error. please try ahain later.')
+            if (error.response.status === 500) {
+                 console.error('Server error. Please try again later.');
+            }
         } else if (error.code === "ECONNABORTED") {
             console.error('Request timeout.')
         }

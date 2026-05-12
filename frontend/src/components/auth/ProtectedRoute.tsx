@@ -1,22 +1,22 @@
-import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom';
 import AppLayout from '../layout/AppLayout';
+import { useAuth } from '../../context/AuthContext';
 
 const ProtectedRoute = () => {
-    const isAuthenticated = true; // Replace with actual authentication logic
-const isLoading = false; 
-if(isLoading) {
-  return (
-    <div className='flex items-center justify-center'>
-      <div>Loading...</div>
-    </div>
-  )
-}
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center'>
+        <div>Loading...</div>
+      </div>
+    )
+  }
 
   return (isAuthenticated ?
     <AppLayout>
-        <Outlet />
-    </AppLayout> 
+      <Outlet />
+    </AppLayout>
     : <Navigate to="/login" />
   )
 }

@@ -1,6 +1,6 @@
 $kind: http-request
 name: login
-url: http://localhost:6000/api/auth/login
+url: "{{baseUrl}}/api/auth/login"
 method: POST
 body:
   type: json
