@@ -68,32 +68,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(true);
   };
 
-
-  // const login = async (email: string, password: string) => {
-  //   try {
-  //     const response = await authService.login(email, password);
-      
-  //     console.log('Login response:', response); // Debug log
-      
-  //     if (response.success && response.token && response.user) {
-  //       // Store in localStorage
-  //       localStorage.setItem('token', response.token);
-  //       localStorage.setItem('user', JSON.stringify(response.user));
-        
-  //       // Update state
-  //       setUser(response.user);
-  //       setIsAuthenticated(true);
-        
-  //       return response;
-  //     } else {
-  //       throw new Error(response.message || 'Login failed');
-  //     }
-  //   } catch (error) {
-  //     console.error('Login error in context:', error);
-  //     throw error;
-  //   }
-  // };
-
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

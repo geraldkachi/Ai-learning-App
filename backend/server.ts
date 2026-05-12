@@ -13,7 +13,7 @@ import aiRoutes from './routes/aiRoutes.ts';
 import quizRoutes from './routes/quizRoutes.ts';
 import progressRoutes from './routes/progressRoutes.ts';
 const app = express();
-const PORT = process.env.PORT || 5000; 
+const PORT = process.env.PORT || 8000; 
 console.log(PORT, 'PORT po')
 // ES6 Modules fix __dirname alternative
 import { fileURLToPath } from 'url';
@@ -104,7 +104,7 @@ process.on('unhandledRejection', (err, promise) => {
 // import { fileURLToPath } from 'url';
 
 // const app = express();
-// const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 8000;
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 
