@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import type { Document } from '../../pages/Documents/DocumentList'
+import type { Document } from '../../pages/Documents/DocumentsList'
 import DeleteConfirmationModal from './DeleteDocumentModal'
 
 interface DocumentCardProps {

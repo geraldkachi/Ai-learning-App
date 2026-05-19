@@ -30,7 +30,7 @@ const UploadDocumentModal: React.FC<UploadDocumentModalProps> = ({ isOpen, onClo
     },
     onError: (error: any) => {
       console.error('Upload error:', error)
-      toast.error(error.message || 'Failed to upload document')
+      toast.error(error.error || 'Failed to upload document')
     }
   })
 
