@@ -14,20 +14,21 @@ import QuizTake from './pages/Quizzies/QuizTake';
 import QuizResults from './pages/Quizzies/QuizResults';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
+import Spinner from './components/ui/Spinner';
 
 
 
 
 function App() {
   
-  const { isAuthenticated, isLoading, } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   
-  if(isLoading) {
+  if(loading) {
     <div className='flex items-center justify-center'>
-      <div>Loading...</div>
+      <Spinner />
     </div>
-  
   } 
+
   return (
     <Router>
       <Routes>

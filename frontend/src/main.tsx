@@ -4,12 +4,26 @@ import { Toaster, } from "react-hot-toast"
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+})
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <Toaster position='top-right' toastOptions={{ duration: 3000,}} />
-      <App />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Toaster position='top-right' toastOptions={{ duration: 3000,}} />
+        <App />
+      </AuthProvider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   </StrictMode>,
 )

@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userString = localStorage.getItem('user');
       if (token && userString) {
         const userData = JSON.parse(userString);
-        setUser(userData);
+        setUser(userData.user);
         setIsAuthenticated(true);
       } else {
         setUser(null);
