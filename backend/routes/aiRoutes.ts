@@ -6,6 +6,8 @@ import {
     chat,
     explainConcept,
     getChatHistory,
+    deleteSingleMessage,
+    deleteChatHistory,
 } from '../controllers/aiController.ts';
 import protect from '../middleware/auth.ts';
 
@@ -18,5 +20,9 @@ router.post('/generate-summary', generateSummary)
 router.post('/chat', chat)
 router.post('/explain-concept', explainConcept)
 router.get('/chat-history/:documentId', getChatHistory)
+
+// Add these new routes
+router.delete('/chat-history/:documentId', deleteChatHistory)                    // Delete entire chat history
+router.delete('/chat-history/:documentId/message/:messageId', deleteSingleMessage)  // Delete single message
 
 export default router

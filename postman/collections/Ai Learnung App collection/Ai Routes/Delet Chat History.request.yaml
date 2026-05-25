@@ -1,0 +1,10 @@
+$kind: http-request
+name: Delet Chat History
+url: "{{baseUrl}}/api/ai/chat-history/:documentId/message/:messageId"
+method: DELETE
+headers:
+  Authorization: Bearer {{accessToken}}
+pathVariables:
+  documentId: 6a0f07d516fcf0eceef25536
+  messageId: 6a1473cd5eee7108fdf53399
+order: 4501430565682601

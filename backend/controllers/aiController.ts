@@ -171,11 +171,12 @@ export const generateSummary = async (req: Request, res: Response, next: NextFun
 // @desc  Chat with document
 // @route POST /api/ai/chat
 // @access Private
+
 export const chat = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { documentId, question } = req.body;
-        const document = await Document.findOne({ _id: documentId, userId: req.user._id , status: "ready"});
 
+        // ✅ Validate inputs BEFORE hitting the database
         if (!documentId || !question) {
             return res.status(400).json({
                 success: false,
@@ -183,7 +184,13 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
                 statusCode: 400
             });
         }
-        
+
+        const document = await Document.findOne({ 
+            _id: documentId, 
+            userId: req.user._id, 
+            status: "ready" 
+        });
+
         if (!document) {
             return res.status(404).json({
                 success: false,
@@ -192,11 +199,15 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
             });
         }
 
-        // Extract text from document and chunk it
-        const relevantChunks = await findRelevantChunks(document.chunks, question, 3);
+        const mappedChunks = document.chunks.map(chunk => ({
+            content: chunk.content,
+            chunkIndex: chunk.chunkIndex,
+            pageNumber: chunk.pageNumber ?? 0
+        }));
+
+        const relevantChunks = await findRelevantChunks(mappedChunks, question, 3);
         const chunkIndices = relevantChunks.map((chunk) => chunk.chunkIndex);
 
-        // Get chat history for context
         let chatHistory = await ChatHistory.findOne({ userId: req.user._id, documentId });
         if (!chatHistory) {
             chatHistory = await ChatHistory.create({
@@ -206,11 +217,20 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
             });
         }
 
-        // // Generate response using Gemini API
         const answer = await geminiService.chatWithContext(question, relevantChunks);
-        // Save conversation to chat history
-        chatHistory.messages.push({ role: 'user', content: question, timestamp: new Date(), relevantChunks: [] });
-        chatHistory.messages.push({ role: 'assistant', content: answer, timestamp: new Date(), relevantChunks: chunkIndices });
+
+        chatHistory.messages.push({ 
+            role: 'user', 
+            content: question, 
+            timestamp: new Date(), 
+            relevantChunks: [] 
+        });
+        chatHistory.messages.push({ 
+            role: 'assistant', 
+            content: answer, 
+            timestamp: new Date(), 
+            relevantChunks: chunkIndices 
+        });
         await chatHistory.save();
 
         res.status(200).json({
@@ -223,7 +243,7 @@ export const chat = async (req: Request, res: Response, next: NextFunction) => {
             },
             message: 'Chat response generated successfully', 
             statusCode: 200
-         });
+        });
     } catch (error) {
         console.error('Error in chat:', error);
         next(error);
@@ -257,8 +277,15 @@ export const explainConcept = async (req: Request, res: Response, next: NextFunc
             });
         }
 
+        // OR better: map to expected format
+        const mappedChunks = document.chunks.map(chunk => ({
+            content: chunk.content,
+            chunkIndex: chunk.chunkIndex,
+            pageNumber: chunk.pageNumber ?? 0 // Provide default if needed
+        }));
         // Extract text from document and chunk it
-        const relevantChunks = await findRelevantChunks(document.chunks, concept, 3);
+        const relevantChunks = await findRelevantChunks(mappedChunks, concept, 3);
+        // const relevantChunks = await findRelevantChunks(mappedChunks, concept, 3);
         const context = relevantChunks.map((c) => `${c.content}`).join('\n\n');
         // const context = relevantChunks.map((c, i) => `[Chunk ${i + 1}]\n${c.content}`).join('\n\n');
         // Generate explanation using Gemini API
@@ -283,14 +310,22 @@ export const explainConcept = async (req: Request, res: Response, next: NextFunc
 export const getChatHistory = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { documentId } = req.params;
-        const document = await Document.findOne({ _id: documentId, userId: req.user._id, status: "ready" });
-          if (!documentId) {
-            return res.status(404).json({
+
+        // ✅ Validate documentId FIRST before any DB call
+        if (!documentId) {
+            return res.status(400).json({
                 success: false,
                 error: 'Please provide a valid document ID',
-                statusCode: 404
+                statusCode: 400
             });
         }
+
+        const document = await Document.findOne({ 
+            _id: documentId, 
+            userId: req.user._id, 
+            status: "ready"   // 'status: ready' is correct here on Document
+        });
+
         if (!document) {
             return res.status(404).json({
                 success: false,
@@ -299,24 +334,164 @@ export const getChatHistory = async (req: Request, res: Response, next: NextFunc
             });
         }
 
-        const chatHistory = await ChatHistory.findOne({ userId: req.user._id, documentId, status: "ready" }).select('messages');
+        // ✅ Removed the wrong `status: "ready"` filter — ChatHistory has no status field
+        const chatHistory = await ChatHistory.findOne({ 
+            userId: req.user._id, 
+            documentId 
+        });
+
         if (!chatHistory) {
             return res.status(200).json({
                 success: true,
                 data: [],
                 message: 'No chat history found for this document',
                 statusCode: 200
-             }); 
+            }); 
         }
 
         res.status(200).json({
             success: true,
-            data: chatHistory.messages,
+            data: chatHistory.messages,   // ✅ Full messages with _id included
             message: 'Chat history retrieved successfully', 
             statusCode: 200
-         });
+        });
     } catch (error) {
         console.error('Error retrieving chat history:', error);
         next(error);
     }
 }
+
+////////////////////////
+
+// @desc Delete chat history for a document
+// @route DELETE /api/ai/chat-history/:documentId
+// @access Private
+export const deleteChatHistory = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { documentId } = req.params;
+
+        // Validate documentId
+        if (!documentId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide a valid document ID',
+                statusCode: 400
+            });
+        }
+
+        // Verify document exists and belongs to user
+        const document = await Document.findOne({ 
+            _id: documentId, 
+            userId: req.user._id, 
+            status: "ready" 
+        });
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                error: 'Document not found',
+                statusCode: 404
+            });
+        }
+
+        // Delete chat history
+        const deletedChat = await ChatHistory.findOneAndDelete({ 
+            userId: req.user._id, 
+            documentId 
+        });
+
+        if (!deletedChat) {
+            return res.status(200).json({
+                success: true,
+                data: null,
+                message: 'No chat history found to delete',
+                statusCode: 200
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: { documentId, deleted: true },
+            message: 'Chat history deleted successfully',
+            statusCode: 200
+        });
+    } catch (error) {
+        console.error('Error deleting chat history:', error);
+        next(error);
+    }
+};
+
+// @desc Delete a single message from chat history
+// @route DELETE /api/ai/chat-history/:documentId/message/:messageId
+// @access Private
+export const deleteSingleMessage = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { documentId, messageId } = req.params;
+
+        if (!documentId || !messageId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Please provide both document ID and message ID',
+                statusCode: 400
+            });
+        }
+
+        // Verify document exists
+        const document = await Document.findOne({ 
+            _id: documentId, 
+            userId: req.user._id 
+        });
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                error: 'Document not found',
+                statusCode: 404
+            });
+        }
+
+        // Remove specific message from chat history
+        const chatHistory = await ChatHistory.findOne({ 
+            userId: req.user._id, 
+            documentId 
+        });
+
+        if (!chatHistory) {
+            return res.status(404).json({
+                success: false,
+                error: 'Chat history not found',
+                statusCode: 404
+            });
+        }
+
+        // Filter out the message to delete
+        const initialLength = chatHistory.messages.length;
+        chatHistory.messages = chatHistory.messages.filter(
+            (msg: any) => msg._id.toString() !== messageId
+        );
+
+        if (chatHistory.messages.length === initialLength) {
+            return res.status(404).json({
+                success: false,
+                error: 'Message not found',
+                statusCode: 404
+            });
+        }
+
+        await chatHistory.save();
+
+        res.status(200).json({
+            success: true,
+            data: { 
+                documentId, 
+                messageId, 
+                remainingMessages: chatHistory.messages.length 
+            },
+            message: 'Message deleted successfully',
+            statusCode: 200
+        });
+    } catch (error) {
+        console.error('Error deleting message:', error);
+        next(error);
+    }
+};

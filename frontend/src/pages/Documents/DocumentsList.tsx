@@ -138,6 +138,7 @@ const DocumentListPage: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       toast.success('Document deleted successfully')
     },
     onError: (error: any) => {

@@ -4,11 +4,14 @@ import Spinner from '../../components/ui/Spinner'
 import progressService from '../../services/progressService'
 import toast from 'react-hot-toast'
 import { FileText, BookOpen, BrainCircuit, Clock } from "lucide-react"
+import { useNavigate } from 'react-router-dom'
 
 // Query key constants
 const DASHBOARD_QUERY_KEY = ['dashboard']
 
 const Dashboard = () => {
+    const navigate = useNavigate() // Add this hook
+
   const { 
     data: dashboardData, 
     isLoading, 
@@ -26,11 +29,28 @@ const Dashboard = () => {
     retry: 1,
   })
 
+  console.log('Dashboard data:', dashboardData)
+
   React.useEffect(() => {
     if (error) {
       toast.error(error.message || 'Failed to load dashboard data')
     }
   }, [error])
+
+    // Handle navigation based on activity type
+  const handleViewActivity = (activity) => {
+    switch (activity.type) {
+      case 'document':
+        navigate(`/documents/${activity.id}`)
+        break
+      case 'quiz':
+        navigate(`/quizzes/${activity.id}`)
+        break
+      default:
+        console.warn('Unknown activity type:', activity.type)
+        toast.error('Unable to navigate to this item')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -160,7 +180,7 @@ const Dashboard = () => {
                           : 'Invalid Date'}
                       </p>
                     </div>
-                    <button className="ml-4 px-3 py-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    <button onClick={() => handleViewActivity(activity)} className="ml-4 px-3 py-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
                       View
                     </button>
                   </div>

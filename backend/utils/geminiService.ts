@@ -31,7 +31,8 @@ export interface TextChunk {
     content: string;
     chunkIndex: number;
     pageNumber: number;
-    _id?: string;
+    _id?: string | number; // Allow both string and number
+    score?: number; // Make score optional
 }
 
 /**
@@ -220,6 +221,43 @@ ${text.substring(0, 20000)}`;
     }
 };
 
+// /**
+//  * Chat with document context
+//  * @param question - User question
+//  * @param chunks - Relevant document chunks
+//  * @returns Promise<string>
+//  */
+// export const chatWithContext = async (question: string, chunks: TextChunk[]): Promise<string> => {
+//     const context = chunks.map((c, i) => `[Chunk ${i + 1}]\n${c.content}`).join('\n\n');
+
+//     const prompt = `Based on the following context from a document, analyze the context and answer the user's question. If the answer is not in the context, say "I couldn't find information about that in the document."
+
+// Context:
+// ${context}
+
+// Question: ${question}
+
+// Answer:`;
+
+//     try {
+//         const response = await ai.models.generateContent({
+//             model: "gemini-2.5-flash-lite",
+//             contents: prompt,
+//         });
+
+//         const generatedText = response.text;
+        
+//         if (!generatedText) {
+//             throw new Error('No response from Gemini API');
+//         }
+
+//         return generatedText;
+//     } catch (error) {
+//         console.error('Gemini API error:', error);
+//         throw new Error('Failed to process chat request');
+//     }
+// };
+
 /**
  * Chat with document context
  * @param question - User question
@@ -227,14 +265,63 @@ ${text.substring(0, 20000)}`;
  * @returns Promise<string>
  */
 export const chatWithContext = async (question: string, chunks: TextChunk[]): Promise<string> => {
-    const context = chunks.map((c, i) => `[Chunk ${i + 1}]\n${c.content}`).join('\n\n');
+    // Handle case when no relevant chunks are found
+    if (!chunks || chunks.length === 0) {
+        const noContextPrompt = `The user asked: "${question}"
 
-    const prompt = `Based on the following context from a document, analyze the context and answer the user's question. If the answer is not in the context, say "I couldn't find information about that in the document."
+However, no relevant context was found in the document to answer this question.
 
-Context:
+Please respond with a helpful message that:
+1. Acknowledges you couldn't find information about this topic in the document
+2. Suggests what the document might be about (based on the document title or general content if available)
+3. Offers to help with other questions about the document
+
+Keep the response friendly and helpful.`;
+
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash-lite",
+                contents: noContextPrompt,
+            });
+            
+            return response.text || "I couldn't find information about that in this document. Could you ask something else about the document content?";
+        } catch (error) {
+            console.error('Gemini API error:', error);
+            return "I couldn't find information about that in this document. Please try asking a different question.";
+        }
+    }
+
+    // Prepare context with better formatting
+    const context = chunks.map((c, i) => {
+        const chunkNumber = i + 1;
+        const relevance = c.score ? ` (relevance: ${Math.round(c.score * 100)}%)` : '';
+        return `[Excerpt ${chunkNumber}${relevance}]\n${c.content}`;
+    }).join('\n\n---\n\n');
+
+    // Count total words in context for better prompt engineering
+    const contextWordCount = context.split(/\s+/).length;
+    const isLargeContext = contextWordCount > 2000;
+
+    // Enhanced prompt with better instructions
+    const prompt = `You are a helpful document analysis assistant. Your task is to answer questions based ONLY on the provided document excerpts.
+
+## Instructions:
+1. **Answer ONLY from the context** - Do not use external knowledge
+2. **Be specific** - Quote or reference the relevant parts of the context
+3. **Be honest** - If the answer isn't in the context, say so clearly
+4. **Be helpful** - Suggest what the document DOES contain if possible
+5. **Keep it concise** - Don't add unnecessary information
+
+## Context from Document:
 ${context}
 
-Question: ${question}
+${isLargeContext ? "Note: The context is quite detailed. Focus on the most relevant excerpts for your answer.\n" : ""}
+
+## User's Question:
+${question}
+
+## Your Response:
+${chunks.length === 1 ? "(Based on the single relevant excerpt found)" : `(Based on ${chunks.length} relevant excerpts found)`}
 
 Answer:`;
 
@@ -242,6 +329,11 @@ Answer:`;
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-lite",
             contents: prompt,
+            config: {
+                temperature: 0.3,  // Lower temperature for more factual responses
+                topP: 0.8,
+                topK: 40,
+            }
         });
 
         const generatedText = response.text;
@@ -250,10 +342,12 @@ Answer:`;
             throw new Error('No response from Gemini API');
         }
 
-        return generatedText;
+        return generatedText.trim();
     } catch (error) {
         console.error('Gemini API error:', error);
-        throw new Error('Failed to process chat request');
+        
+        // Fallback response for API errors
+        return "I'm having trouble processing your request right now. Please try again in a moment.";
     }
 };
 

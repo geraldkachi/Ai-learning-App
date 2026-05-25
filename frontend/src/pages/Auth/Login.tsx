@@ -90,7 +90,7 @@ const LoginPage: React.FC = () => {
         email: 'Invalid email or password',
         password: 'Invalid email or password'
       });
-      toast.error('Login failed! Please try again.');
+      toast.error(err.error);
     } finally {
       setLoading(false);
     }
