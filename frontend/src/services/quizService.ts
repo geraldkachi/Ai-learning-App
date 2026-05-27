@@ -17,6 +17,7 @@ export interface QuizQuestion {
 
 export interface Quiz {
   id: string;
+  _id: string;
   title: string;
   description?: string;
   documentId: string;

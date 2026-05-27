@@ -45,8 +45,8 @@ function App() {
           <Route path="/documents/:id" element={<DocumentsDetails  />} />
           <Route path="/flashcards" element={<FlashcardList />} />
           <Route path="/documents/:id/flashcards" element={<Flashcards />} />
-          <Route path="/quizzes/:quizId" element={<QuizTake />} />
-          <Route path="/quizzes/:quizId/results" element={<QuizResults />} />
+          <Route path="/quizzes/:id/:quizId" element={<QuizTake />} />
+          <Route path="/quizzes/:id/:quizId/results" element={<QuizResults />} />
           <Route path="profile" element={<Profile />} />
         </Route>
 

@@ -24,7 +24,6 @@
 
 // export default connectDB;
 
-
 import mongoose from 'mongoose';
 
 const connectDB = async (): Promise<void> => {
@@ -42,6 +41,7 @@ const connectDB = async (): Promise<void> => {
     
     // Clean up problematic indexes after connection
     await cleanupIndexes();
+    await cleanupFlashcardIndexes(); // Add this line
     
   } catch (error: any) {
     console.error(`Error: ${error}`); 
@@ -66,9 +66,9 @@ const cleanupIndexes = async () => {
     const problematicIndex = indexes.find(idx => idx.name === 'userId_1_uploadDate_-1');
     
     if (problematicIndex) {
-      console.log('⚠️ Found problematic index, dropping...');
+      console.log('⚠️ Found problematic index on documents, dropping...');
       await collection.dropIndex('userId_1_uploadDate_-1');
-      console.log('✅ Dropped problematic index');
+      console.log('✅ Dropped problematic index on documents');
     }
     
     // Create correct indexes if they don't exist
@@ -76,16 +76,69 @@ const cleanupIndexes = async () => {
     
     if (!indexNames.includes('userId_1_createdAt_-1')) {
       await collection.createIndex({ userId: 1, createdAt: -1 });
-      console.log('✅ Created index: userId_1_createdAt_-1');
+      console.log('✅ Created index on documents: userId_1_createdAt_-1');
     }
     
     if (!indexNames.includes('userId_1_status_1')) {
       await collection.createIndex({ userId: 1, status: 1 });
-      console.log('✅ Created index: userId_1_status_1');
+      console.log('✅ Created index on documents: userId_1_status_1');
     }
     
   } catch (error) {
-    console.error('Error cleaning up indexes:', error);
+    console.error('Error cleaning up documents indexes:', error);
+  }
+};
+
+// New function to clean up flashcards collection indexes
+const cleanupFlashcardIndexes = async () => {
+  try {
+    const db = mongoose.connection.db;
+    const collection = db.collection('flashcards');
+    
+    // Check if collection exists
+    const collections = await db.listCollections({ name: 'flashcards' }).toArray();
+    if (collections.length === 0) {
+      console.log('⚠️ Flashcards collection does not exist yet, skipping index cleanup');
+      return;
+    }
+    
+    // Get all indexes
+    const indexes = await collection.indexes();
+    console.log('📋 Current flashcards indexes:', indexes.map(idx => ({ name: idx.name, unique: idx.unique || false })));
+    
+    // Find and drop the unique index if it exists
+    const uniqueIndex = indexes.find(idx => idx.name === 'userId_1_documentId_1' && idx.unique === true);
+    
+    if (uniqueIndex) {
+      console.log('⚠️ Found UNIQUE index on flashcards: userId_1_documentId_1, dropping...');
+      await collection.dropIndex('userId_1_documentId_1');
+      console.log('✅ Dropped unique index on flashcards');
+    } else {
+      console.log('✅ No unique index found on flashcards');
+    }
+    
+    // Create regular (non-unique) indexes if they don't exist
+    const indexNames = indexes.map(idx => idx.name);
+    
+    if (!indexNames.includes('userId_1_documentId_1')) {
+      await collection.createIndex({ userId: 1, documentId: 1 });
+      console.log('✅ Created regular index on flashcards: userId_1_documentId_1');
+    }
+    
+    if (!indexNames.includes('userId_1_createdAt_-1')) {
+      await collection.createIndex({ userId: 1, createdAt: -1 });
+      console.log('✅ Created index on flashcards: userId_1_createdAt_-1');
+    }
+    
+    // Verify the index is not unique
+    const finalIndexes = await collection.indexes();
+    const finalUniqueIndex = finalIndexes.find(idx => idx.name === 'userId_1_documentId_1');
+    if (finalUniqueIndex) {
+      console.log(`✅ Final index on flashcards: ${finalUniqueIndex.name} - Unique: ${finalUniqueIndex.unique || false}`);
+    }
+    
+  } catch (error) {
+    console.error('Error cleaning up flashcards indexes:', error);
   }
 };
 

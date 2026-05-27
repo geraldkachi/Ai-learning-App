@@ -8,8 +8,10 @@ import documentService from '../../services/documentService'
 import Spinner from '../../components/ui/Spinner'
 import Tabs from '../../components/ui/Tab'
 import PageHeader from '../../components/ui/PageHeader'
-import AiAction from '../../components/document-details/AiAction'
 import ChatInterface from '../../components/document-details/ChatInterface'
+import AIActions from '../../components/document-details/AiAction'
+import FlashcardManager from '../../components/document-details/FlashcardManager'
+import QuizManager from '../../components/document-details/QuizManager'
 
 interface Document {
   _id: string;
@@ -270,73 +272,73 @@ const DocumentDetailPage: React.FC = () => {
   }
 
   // Render quizzes tab
-  const renderQuizzesTab = () => {
-    const hasQuizzes = (document?.numQuizzes || 0) > 0
+  // const renderQuizzesTab = () => {
+  //   const hasQuizzes = (document?.numQuizzes || 0) > 0
 
-    if (hasQuizzes) {
-      return (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BrainCircuit className="w-5 h-5 text-purple-600" />
-                <span className="text-sm font-medium text-gray-700">Quizzes</span>
-              </div>
-              <button
-                onClick={() => window.location.href = `/documents/${id}/quizzes`}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm font-medium"
-              >
-                View All ({document?.numQuizzes})
-              </button>
-            </div>
-          </div>
-          <div className="p-8 text-center">
-            <BrainCircuit className="w-16 h-16 text-purple-100 mx-auto mb-4" />
-            <p className="text-gray-600">You have {document?.numQuizzes} quiz(zes) for this document</p>
-            <button
-              onClick={() => window.location.href = `/documents/${id}/quiz`}
-              className="mt-4 inline-flex items-center gap-2 text-purple-600 hover:text-purple-700"
-            >
-              Take a Quiz
-              <ArrowLeft size={14} className="rotate-180" />
-            </button>
-          </div>
-        </div>
-      )
-    }
+  //   if (hasQuizzes) {
+  //     return (
+  //       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  //         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+  //           <div className="flex items-center justify-between">
+  //             <div className="flex items-center gap-2">
+  //               <BrainCircuit className="w-5 h-5 text-purple-600" />
+  //               <span className="text-sm font-medium text-gray-700">Quizzes</span>
+  //             </div>
+  //             <button
+  //               onClick={() => window.location.href = `/documents/${id}/quizzes`}
+  //               className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm font-medium"
+  //             >
+  //               View All ({document?.numQuizzes})
+  //             </button>
+  //           </div>
+  //         </div>
+  //         <div className="p-8 text-center">
+  //           <BrainCircuit className="w-16 h-16 text-purple-100 mx-auto mb-4" />
+  //           <p className="text-gray-600">You have {document?.numQuizzes} quiz(zes) for this document</p>
+  //           <button
+  //             onClick={() => window.location.href = `/documents/${id}/quiz`}
+  //             className="mt-4 inline-flex items-center gap-2 text-purple-600 hover:text-purple-700"
+  //           >
+  //             Take a Quiz
+  //             <ArrowLeft size={14} className="rotate-180" />
+  //           </button>
+  //         </div>
+  //       </div>
+  //     )
+  //   }
 
-    return (
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BrainCircuit className="w-5 h-5 text-purple-600" />
-              <span className="text-sm font-medium text-gray-700">Quizzes</span>
-            </div>
-            <button
-              onClick={() => window.location.href = `/documents/${id}/quiz/create`}
-              disabled={document?.status !== 'ready'}
-              className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Generate Quiz
-            </button>
-          </div>
-        </div>
-        <div className="p-8 text-center">
-          <BrainCircuit className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No Quizzes Available</h3>
-          <p className="text-gray-500 mb-6">Generate an AI-powered quiz based on this document</p>
-          <button
-            onClick={() => window.location.href = `/documents/${id}/quiz/create`}
-            disabled={document?.status !== 'ready'}
-            className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Generate Quiz
-          </button>
-        </div>
-      </div>
-    )
-  }
+  //   return (
+  //     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  //       <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+  //         <div className="flex items-center justify-between">
+  //           <div className="flex items-center gap-2">
+  //             <BrainCircuit className="w-5 h-5 text-purple-600" />
+  //             <span className="text-sm font-medium text-gray-700">Quizzes</span>
+  //           </div>
+  //           <button
+  //             onClick={() => window.location.href = `/documents/${id}/quiz/create`}
+  //             disabled={document?.status !== 'ready'}
+  //             className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+  //           >
+  //             Generate Quiz
+  //           </button>
+  //         </div>
+  //       </div>
+  //       <div className="p-8 text-center">
+  //         <BrainCircuit className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+  //         <h3 className="text-lg font-medium text-gray-900 mb-2">No Quizzes Available</h3>
+  //         <p className="text-gray-500 mb-6">Generate an AI-powered quiz based on this document</p>
+  //         <button
+  //           onClick={() => window.location.href = `/documents/${id}/quiz/create`}
+  //           disabled={document?.status !== 'ready'}
+  //           className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+  //         >
+  //           Generate Quiz
+  //         </button>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   // Define tabs
   const tabs = [
@@ -348,23 +350,25 @@ const DocumentDetailPage: React.FC = () => {
     {
       name: 'chat',
       label: 'Chat',
-      content: ChatInterface()
-    },
-    {
-      name: 'flashcards',
-      label: 'Flashcards',
-      content: renderFlashcardsTab()
-    },
-    {
-      name: 'quizzes',
-      label: 'Quizzes',
-      content: renderQuizzesTab()
+      content: <ChatInterface />  
     },
     {
       name: 'ai-actions',
       label: 'AI Actions',
-      content: AiAction()
-    }
+      content: <AIActions />
+    },
+    {
+      name: 'flashcards',
+      label: 'Flashcards',
+      // content: renderFlashcardsTab()
+      content: <FlashcardManager />
+    },
+    {
+      name: 'quizzes',
+      label: 'Quizzes',
+      // content: renderQuizzesTab()
+      content: <QuizManager />
+    },
   ]
 
   // Loading state

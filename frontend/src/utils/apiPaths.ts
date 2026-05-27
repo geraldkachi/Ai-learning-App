@@ -43,7 +43,7 @@ export const API_PATHS = {
 
   QUIZZES: {
     GET_QUIZZES_FOR_DOC: (documentId: string | number): string => `/api/quizzes/${documentId}`,
-    GET_QUIZ_BY_ID: (id: string | number): string => `/api/quizzes/quiz/${id}`,
+    GET_QUIZ_BY_ID: (id: string | number): string => `/api/quizzes/${id}`,
     SUBMIT_QUIZ: (id: string | number): string => `/api/quizzes/${id}/submit`,
     GET_QUIZ_RESULTS: (id: string | number): string => `/api/quizzes/${id}/results`,
     DELETE_QUIZ: (id: string | number): string => `/api/quizzes/${id}`,

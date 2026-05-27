@@ -11,6 +11,10 @@ const flashcardSchema = new mongoose.Schema({
         ref: 'Document',
         required: true
     },
+      title: {
+        type: String,
+        default: 'Flashcard Set'
+    },
     cards: [
         {
             question: {
@@ -55,7 +59,11 @@ const flashcardSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-flashcardSchema.index({ userId: 1, documentId: 1 }, { unique: true });
+// flashcardSchema.index({ userId: 1, documentId: 1 }, { unique: true });
+// Remove the unique index - allow multiple sets per document
+// Just use a regular index for faster queries
+flashcardSchema.index({ userId: 1, documentId: 1 });
+flashcardSchema.index({ userId: 1, createdAt: -1 });
 
 const Flashcard = mongoose.model('Flashcard', flashcardSchema);
 export default Flashcard;   

@@ -454,7 +454,16 @@ export const deleteSingleMessage = async (req: Request, res: Response, next: Nex
         const chatHistory = await ChatHistory.findOne({ 
             userId: req.user._id, 
             documentId 
-        });
+        },
+          { 
+                $pull: { 
+                    messages: { _id: messageId } 
+                } 
+            },
+            { 
+                new: true // Return the updated document
+            }
+    );
 
         if (!chatHistory) {
             return res.status(404).json({
@@ -466,9 +475,21 @@ export const deleteSingleMessage = async (req: Request, res: Response, next: Nex
 
         // Filter out the message to delete
         const initialLength = chatHistory.messages.length;
-        chatHistory.messages = chatHistory.messages.filter(
-            (msg: any) => msg._id.toString() !== messageId
+        // chatHistory.messages = chatHistory.messages.filter(
+        //     (msg: any) => msg._id.toString() !== messageId
+        // );
+        // Check if message exists before pulling
+        const messageExists = chatHistory.messages.some(
+            (msg: any) => msg._id.toString() === messageId
         );
+
+        if (!messageExists) {
+            return res.status(404).json({
+                success: false,
+                error: 'Message not found',
+                statusCode: 404
+            });
+        }
 
         if (chatHistory.messages.length === initialLength) {
             return res.status(404).json({
@@ -478,6 +499,8 @@ export const deleteSingleMessage = async (req: Request, res: Response, next: Nex
             });
         }
 
+         // Remove the message using pull
+        chatHistory.messages.pull({ _id: messageId });
         await chatHistory.save();
 
         res.status(200).json({

@@ -131,7 +131,7 @@ const generateFlashcards = async (
   options: FlashcardOptions = {}
 ): Promise<GenerateFlashcardsResponse> => {
   try {
-    const response = await axiosInstance.post(API_PATHS.AI.GENERATE_FLASHCARDS, {
+    const response = await axiosInstance.post(API_PATHS.AI.GENERATE_FLASHCARDS, {    
       documentId,
       ...options
     });
@@ -161,7 +161,7 @@ const generateSummary = async (documentId: string): Promise<GenerateSummaryRespo
     const response = await axiosInstance.post(API_PATHS.AI.GENERATE_SUMMARY, {
       documentId
     });
-    return response.data?.data || response.data;
+    return response.data || response.data;
   } catch (error: any) {
     throw error.response?.data || { message: 'Failed to generate summary' };
   }
@@ -185,7 +185,7 @@ const explainConcept = async (documentId: string, concept: string): Promise<Expl
       documentId,
       concept
     });
-    return response.data?.data || response.data;
+    return response.data || response.data;
   } catch (error: any) {
     throw error.response?.data || { message: 'Failed to explain concept' };
   }

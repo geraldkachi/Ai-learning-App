@@ -98,7 +98,7 @@ ${text.substring(0, 15000)}`;
         return flashcards.slice(0, count);
     } catch (error) {
         console.error('Gemini API error:', error);
-        throw new Error('Failed to generate flashcards');
+        throw new Error(`Failed to generate flashcards: ${error}`);
     }
 };
 
@@ -187,7 +187,7 @@ ${text.substring(0, 15000)}`;
         return questions.slice(0, numQuestions);
     } catch (error) {
         console.error('Gemini API error:', error);
-        throw new Error('Failed to generate quiz');
+        throw new Error(`Failed to generate quiz: ${error}`);
     }
 };
 
@@ -217,7 +217,7 @@ ${text.substring(0, 20000)}`;
         return generatedText;
     } catch (error) {
         console.error('Gemini API error:', error);
-        throw new Error('Failed to generate summary');
+        throw new Error(`Failed to generate summary: ${error}`);
     }
 };
 
@@ -287,7 +287,7 @@ Keep the response friendly and helpful.`;
             return response.text || "I couldn't find information about that in this document. Could you ask something else about the document content?";
         } catch (error) {
             console.error('Gemini API error:', error);
-            return "I couldn't find information about that in this document. Please try asking a different question.";
+            return `I couldn't find information about that in this document. Please try asking a different question.`;
         }
     }
 

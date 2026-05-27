@@ -56,7 +56,6 @@ interface ErrorWithResponse {
 
 const ChatInterface: React.FC = () => {
     const { user } = useAuth()
-    console.log(user, 'user info in ChatInterface')
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [input, setInput] = useState<string>('')
@@ -87,7 +86,6 @@ const ChatInterface: React.FC = () => {
     // Initialize messages from chat history
     useEffect(() => {
         if (chatHistoryData?.data && Array.isArray(chatHistoryData.data)) {
-            console.log('Loading chat history:', chatHistoryData.data)
             // Transform backend messages to frontend format
             const formattedMessages: ChatMessage[] = chatHistoryData.data.map((msg, index) => ({
                 id: msg._id || Date.now() + index,
