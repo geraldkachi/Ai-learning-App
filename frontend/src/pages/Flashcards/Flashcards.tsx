@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, AlertCircle, Star } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2, AlertCircle, Star, Trash2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import flashcardService from '../../services/flashcardService'
 
@@ -36,6 +36,7 @@ interface ApiResponse {
   statusCode: number
 }
 
+// Flashcard Card Component with 3D Flip
 const FlashcardCard: React.FC<{
   card: Flashcard
   onDelete: (cardId: string) => void
@@ -47,58 +48,67 @@ const FlashcardCard: React.FC<{
   const backText = card.answer || 'No answer available'
 
   return (
-    <div className="relative">
-      <div
-        className="cursor-pointer"
-        onClick={() => setIsFlipped(!isFlipped)}
-      >
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 min-h-[400px] flex flex-col items-center justify-center transition-all duration-300 hover:shadow-lg">
-          {!isFlipped ? (
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-slate-500 mb-4">Question</h3>
-              <p className="text-xl text-slate-800">{frontText}</p>
+    <div 
+      className="relative h-96 cursor-pointer perspective-1000"
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <div className={`relative w-full h-full transition-transform duration-500 transform-gpu preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+        
+        {/* Front Side - Question */}
+        <div className="absolute w-full h-full backface-hidden">
+          <div className="h-full bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 p-6 flex flex-col shadow-lg">
+            <div className="flex-1 flex items-center justify-center overflow-y-auto">
+              <p className="text-slate-700 text-lg font-medium text-center">
+                {frontText}
+              </p>
             </div>
-          ) : (
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-emerald-600 mb-4">Answer</h3>
-              <p className="text-xl text-slate-800">{backText}</p>
+            <div className="text-center text-xs text-slate-400 mt-4">
+              Click to reveal answer
             </div>
-          )}
+            <div className="absolute top-3 right-3 flex gap-2">
+              {onToggleStar && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleStar(card._id)
+                  }}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-yellow-500 transition-colors bg-white/50 backdrop-blur-sm"
+                >
+                  <Star className={`w-4 h-4 ${card.isStarred ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                </button>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete(card._id)
+                }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors bg-white/50 backdrop-blur-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div className="absolute top-4 right-4 flex gap-2">
-        {onToggleStar && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleStar(card._id)
-            }}
-            className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
-          >
-            <Star className={`w-4 h-4 ${card.isStarred ? 'fill-yellow-500 text-yellow-500' : 'text-slate-400'}`} />
-          </button>
-        )}
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete(card._id)
-          }}
-          className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 transition-colors"
-        >
-          <span className="text-red-500">🗑️</span>
-        </button>
-      </div>
-      
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-sm text-slate-400">
-        Click to {isFlipped ? 'show question' : 'reveal answer'}
+
+        {/* Back Side - Answer */}
+        <div className="absolute w-full h-full backface-hidden rotate-y-180">
+          <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-6 flex flex-col shadow-lg">
+            <div className="flex-1 overflow-y-auto">
+              <p className="text-slate-700 leading-relaxed text-center">
+                {backText}
+              </p>
+            </div>
+            <div className="text-center text-xs text-slate-400 mt-4">
+              Click to see question
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
 const Flashcards: React.FC = () => {
-  // Fix: Use 'id' as the parameter name since that's what's in your route
   const { id: documentId } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -126,9 +136,11 @@ const Flashcards: React.FC = () => {
   // Delete card mutation
   const deleteCardMutation = useMutation({
     mutationFn: async (cardId: string) => {
-      // You'll need to add this endpoint to your flashcardService
-      const response = await flashcardService.toggleStar(cardId) // Placeholder
-      return response
+      if (flashcardSet) {
+        const response = await flashcardService.deleteFlashcard(flashcardSet._id, cardId)
+        return response
+      }
+      throw new Error('No flashcard set selected')
     },
     onSuccess: () => {
       toast.success('Card deleted successfully')
@@ -323,7 +335,7 @@ const Flashcards: React.FC = () => {
         />
       </div>
 
-      {/* Flashcard */}
+      {/* Flashcard with 3D Flip */}
       {currentCard && (
         <FlashcardCard 
           card={currentCard} 
