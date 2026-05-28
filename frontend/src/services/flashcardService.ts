@@ -118,6 +118,38 @@ const deleteFlashcardSet = async (id: string | number): Promise<DeleteResponse> 
     throw error.response?.data || { message: 'Failed to delete flashcards' };
   }
 };
+// Delete a single flashcard from a set
+const deleteFlashcard = async (setId: string | number, cardId: string | number): Promise<DeleteResponse> => {
+  try {
+    const response = await axiosInstance.delete(`/api/flashcards/${setId}/cards/${cardId}`);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Failed to delete flashcard' };
+  }
+};
+
+// Get a single flashcard set by ID
+const getFlashcardSetById = async (setId: string | number): Promise<FlashcardResponse> => {
+  try {
+    const response = await axiosInstance.get(`/api/flashcards/set/${setId}`);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Failed to fetch flashcard set' };
+  }
+};
+
+// Update a flashcard
+const updateFlashcard = async (
+  cardId: string | number,
+  updates: { front?: string; back?: string; isStarred?: boolean }
+): Promise<FlashcardResponse> => {
+  try {
+    const response = await axiosInstance.put(`/api/flashcards/card/${cardId}`, updates);
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Failed to update flashcard' };
+  }
+};
 
 const flashcardService = {
   getAllFlashcardSets,
@@ -125,6 +157,9 @@ const flashcardService = {
   reviewFlashcard,
   toggleStar,
   deleteFlashcardSet,
+  deleteFlashcard,
+  getFlashcardSetById,
+  updateFlashcard
 };
 
 export default flashcardService;

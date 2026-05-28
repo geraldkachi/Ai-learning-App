@@ -29,8 +29,6 @@ const Dashboard = () => {
     retry: 1,
   })
 
-  console.log('Dashboard data:', dashboardData)
-
   React.useEffect(() => {
     if (error) {
       toast.error(error.message || 'Failed to load dashboard data')

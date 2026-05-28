@@ -16,7 +16,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; tog
     { name: 'Dashboard', to: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Documents', to: '/documents', icon: <FileText size={20} /> },
     { name: 'Flashcards', to: '/flashcards', icon: <BookOpen size={20} /> },
-    { name: 'Quizzes', to: '/quizzes', icon: <BrainCircuit size={20} /> },
+    // { name: 'Quizzes', to: '/quizzes', icon: <BrainCircuit size={20} /> },
     { name: 'Profile', to: '/profile', icon: <User size={20} /> },
   ]
 
@@ -53,7 +53,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean; tog
 
           {/* User Info */}
           {user && (
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200 hidden">
               <p className="text-sm text-gray-500">Welcome back,</p>
               <p className="font-semibold truncate text-gray-800">{user?.username || user?.email}</p>
             </div>

@@ -499,7 +499,7 @@ const FlashcardManager: React.FC = () => {
         <button
           onClick={() => setShowGenerateModal(true)}
           disabled={generateMutation.isPending}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-sm hover:shadow-md disabled:opacity-50 whitespace-nowrap"
         >
           {generateMutation.isPending ? (
             <Loader2 className="w-4 h-4 animate-spin" />

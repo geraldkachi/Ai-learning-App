@@ -17,14 +17,14 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, setActiveTab }) => {
   return (
     <div className="w-full">
       {/* Tab Navigation */}
-      <div className="relative border-b border-gray-200 bg-white rounded-t-xl">
+      <div className="relative border-b border-gray-200 bg-white rounded-t-xl overflow-x-scroll">
         <nav className="flex gap-1 px-4" role="tablist">
           {tabs.map((tab) => (
             <button
               key={tab.name}
               onClick={() => setActiveTab(tab.name)}
               className={`
-                relative px-6 py-3 text-sm font-medium transition-all duration-200
+                relative px-6 py-3 text-sm font-medium transition-all duration-200 whitespace-nowrap
                 ${activeTab === tab.name 
                   ? 'text-emerald-600' 
                   : 'text-gray-500 hover:text-gray-700'
