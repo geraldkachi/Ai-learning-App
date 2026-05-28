@@ -13,8 +13,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.ts",
-    "start": "node server.ts",
+    "dev": "node api.js && nodemon server.ts",
+    "start": "node api.js && node server.ts",
     "test": "jest",
     "test-init": "jest --init",
     "prettier-check": "npx prettier --check .",
